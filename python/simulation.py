@@ -8,6 +8,7 @@ Created on Fri Nov 17 21:24:11 2023
 from abc import ABC, abstractmethod
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 import numpy as np
 from scipy import signal
 
@@ -59,21 +60,28 @@ class CoarseDiffsion(Simulation):
         self.boundary_condition = boundary_condition
         self.total_concentration = 0
         
-    def set_concentration(self, x : int, y : int, concentration : float):
+    def set_concentration(self, x : int, y : int, concentration : float) -> None:
         self.data[y][x] = concentration
         self.total_concentration = np.sum(self.data)
     
-    def step(self, steps : float, dt : float, display = False, period = 10):
+    def step(self, dt : float) -> None:
         scipy_boundary= ""
         if (self.boundary_condition == BoundaryCondition.INFINITE):
             scipy_boundary = "fill"
         elif (self.boundary_condition == BoundaryCondition.REFLECTIVE):
             scipy_boundary = "symm"
-        for i in range(steps):
-            self.data += (self.diffusion_rate * dt *
+        self.data += (self.diffusion_rate * dt *
                       signal.convolve2d(self.data, self.diffusion_flux, mode='same', boundary=scipy_boundary, fillvalue=0))
+
+    def simulate(self, steps : int, dt : float, display = False, period = 10):
+        time_data = []
+        for i in range(steps):
+            time_data.append(self.data.copy())
+            self.step(dt)
             if (display and i % period == 0):
                 self.display()
+        return time_data
+
     def get_data(self):
         pass
     
@@ -81,9 +89,14 @@ class CoarseDiffsion(Simulation):
         pass
 
     def display(self):
-        color_map = 'hot' #'Spectral'
+        color_map = 'hot' # 'Blues' 
         plt.clf()
-        plt.imshow(np.round(self.data, 3),cmap=color_map, vmin=0.0, vmax=self.total_concentration)
+        disp = self.data
+        plt.imshow(disp, cmap=color_map, vmin=0, vmax=self.total_concentration/(self.size[0] * self.size[1] / 2))
+
+        # plt.pcolor(self.data,
+        #            norm=colors.LogNorm(vmax=np.log(self.total_concentration)),
+        #            cmap='PuBu_r', shading='auto')
         plt.axis('off')
         plt.show()
     
