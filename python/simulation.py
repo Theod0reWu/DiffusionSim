@@ -83,10 +83,7 @@ class CoarseDiffsion(Simulation):
         return time_data
 
     def get_data(self):
-        pass
-    
-    def print_display(self):
-        pass
+        return self.data
 
     def display(self):
         color_map = 'hot' # 'Blues' 
@@ -94,9 +91,6 @@ class CoarseDiffsion(Simulation):
         disp = self.data
         plt.imshow(disp, cmap=color_map, vmin=0, vmax=self.total_concentration/(self.size[0] * self.size[1] / 2))
 
-        # plt.pcolor(self.data,
-        #            norm=colors.LogNorm(vmax=np.log(self.total_concentration)),
-        #            cmap='PuBu_r', shading='auto')
         plt.axis('off')
         plt.show()
     
@@ -110,3 +104,9 @@ class CoarseDiffsion(Simulation):
         d = [str(i) for i in self.data]
         s += "\n".join(d)
         return s
+
+class BrownianMotion(Simulation):
+
+    def __init__(self, size : (float, float)):
+        super().__init__(size)
+

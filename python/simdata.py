@@ -10,6 +10,15 @@ from abc import ABC, abstractmethod
 
 class SimData(ABC):
     
+    @abstractmethod
+    def add_particle(self, id : int):
+        pass
+
+    @abstractmethod
+    def edit_particle(self, id : int):
+        pass
+
+    @abstractmethod
     def get_data(self):
         pass
     
