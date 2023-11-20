@@ -2,6 +2,6 @@
 Diffusion Simulation
 
 # Libraries 
-numpy
-scipy
-matplotlib
+- numpy
+- scipy
+- matplotlib
