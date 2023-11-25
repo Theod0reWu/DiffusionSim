@@ -22,6 +22,55 @@ class SimData(ABC):
     def get_data(self):
         pass
 
+class Particle:
+
+    def __init__(self):
+        self.position = [0,0]
+        self.velocity = [0,0]
+        self.acc = (0,0)
+
+    def __init__(self, position : [float], velocity : [float, float], acc : (float, float)):
+        self.position = position
+        self.velocity = velocity
+        self.acc = acc
+
+    def step(self, dt):
+        for p in range(len(self.position)):
+            self.position[p] = self.velocity[p] * dt + 1/2 * self.acc[p] * dt ** 2 + self.position[p]
+            self.velocity[p] += self.acc[p] * dt
+
+class ParticleMap(SimData):
+    def __init__(self, size : (float, float)):
+        self.size = size
+        self.data = {}
+        self.id = 1
+
+    def in_bounds(self, position: [float]):
+        for p in range(len(self.size)):
+            if (position[p] < 0 or position[p] > self.size[p]):
+                return False
+        return True
+    def add_particle(self, position : [float], velocity : [float], acc : (float, float)):
+        if (self.in_bounds(position)):
+            self.data[self.id] = Particle(position, velocity, acc)
+            self.id += 1
+            return self.id - 1
+        return False
+
+    def update_particle(self, id : int, dt : float):
+        self.data[id].step(dt)
+
+    def get_particle(self, id: int):
+        if (id in self.data):
+            return self.data[id]
+        return False
+
+    def get_ids(self):
+        return self.data.keys()
+
+    def get_data(self):
+        return self.data.values()
+
 class SimMap(SimData):
 
     def __init__(self, size : (float, float)):

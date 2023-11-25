@@ -14,7 +14,7 @@ import matplotlib.animation as animation
 import numpy as np
 from scipy import signal
 
-from simdata import SimMap, BoundaryCondition
+from simdata import SimMap, BoundaryCondition, Particle, ParticleMap
 
 class Simulation(ABC):
     '''
@@ -210,3 +210,12 @@ class BrownianMotion(Simulation):
         s = "size: " + str(self.size) + " | particles:" + str(len(self.simdata.get_ids())) +" | boundary: " + str(self.boundary_condition) +"\n"
         s += str(self.simdata.get_data())
         return s
+
+class ParticleDynamics(Simulation):
+
+    def __init__(self, size):
+        super().__init__(size)
+
+        self.simdata = ParticleMap(size)
+
+    def add_particle(self, )
