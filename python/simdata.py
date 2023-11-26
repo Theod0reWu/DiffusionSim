@@ -34,6 +34,9 @@ class Particle:
         self.acc = acc
         self.dimensions = len(self.position)
 
+    def copy(self):
+        return Particle(self.radius, self.position.copy(), self.velocity.copy(), self.acc.copy())
+
     def step(self, dt):
         for p in range(len(self.position)):
             self.position[p] = self.velocity[p] * dt + 1/2 * self.acc[p] * dt ** 2 + self.position[p]
@@ -72,6 +75,12 @@ class ParticleMap(SimData):
         self.size = size
         self.data = {}
         self.id = 1
+
+    def copy(self):
+        copy = ParticleMap(self.size)
+        for key in self.data:
+            copy.data[key] = self.data[key].copy()
+        return copy
 
     def in_bounds(self, position: [float], radius = 0):
         for p in range(len(self.size)):
