@@ -5,10 +5,12 @@ Created on Sat Nov 18 16:40:35 2023
 @author: wut6
 """
 
-from simulation import CoarseDiffsion, BrownianMotion
+from simulation import CoarseDiffsion, BrownianMotion, ParticleDynamics
 from simdata import BoundaryCondition
 import numpy as np
 import matplotlib.pyplot as plt
+
+import random
 
 def coarse_example_1D():
     #define sim parameters
@@ -62,12 +64,32 @@ def brownian_example():
     sim = BrownianMotion(sim_size, diffusion_rate, bc)
     for i in range(100):
         sim.add_particle(5, .5)
-    print(sim)
+    # print(sim)
 
     timesteps = 50
     # data = sim.simulate(timesteps, 1, True, 10)
     sim.animate(timesteps, 1)
-    print(sim)
+    # print(sim)
+
+def collisions_example():
+    sim_size = (10,10)
+    bc = BoundaryCondition.REFLECTIVE
+
+    sim = ParticleDynamics(sim_size, bc)
+    # sim.add_particle(.5, [3, 5], [1, 0])
+    # sim.add_particle(.5, [5, 3], [0, 1])
+    # sim.add_particle(.5, [7, 5], [-1, 0])
+    # sim.add_particle(.5, [4.9, 5], [1, 0])
+    # sim.add_particle(.5, [5.1, 5], [0, 1])
+    for i in range(100):
+        sim.add_particle(.1,[random.uniform(4,6), random.uniform(4,6)], [random.uniform(-1,1), random.uniform(-1,1)])
+        # sim.add_particle(.1,[random.uniform(0,1), random.uniform(0,1)], [0,0])
+    sim.display()
+
+    # sim.simulate(12, 1)
+    # sim.display()
+
+    sim.animate(20, .1)
 
 
 if __name__ == '__main__':
@@ -75,4 +97,6 @@ if __name__ == '__main__':
 
     # coarse_example_2D()
 
-    brownian_example()
+    # brownian_example()
+
+    collisions_example()
