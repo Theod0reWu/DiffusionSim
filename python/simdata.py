@@ -8,14 +8,12 @@ Created on Fri Nov 17 21:32:02 2023
 from enum import Enum
 from abc import ABC, abstractmethod
 
+from scipy.spatial.distance import pdist
+
 class SimData(ABC):
     
     @abstractmethod
     def add_particle(self, id : int):
-        pass
-
-    @abstractmethod
-    def update_particle(self, id : int):
         pass
 
     @abstractmethod
@@ -29,15 +27,45 @@ class Particle:
         self.velocity = [0,0]
         self.acc = (0,0)
 
-    def __init__(self, position : [float], velocity : [float, float], acc : (float, float)):
+    def __init__(self, radius : float, position : [float], velocity : [float], acc : (float)):
+        self.radius = radius
         self.position = position
         self.velocity = velocity
         self.acc = acc
+        self.dimensions = len(self.position)
 
     def step(self, dt):
         for p in range(len(self.position)):
             self.position[p] = self.velocity[p] * dt + 1/2 * self.acc[p] * dt ** 2 + self.position[p]
             self.velocity[p] += self.acc[p] * dt
+
+    def moving(self):
+        for i in self.velocity:
+            if (i != 0):
+                return True
+        return False
+
+    def overlap(self, p):
+        return pdist([self.position, p.position]) < self.radius + p.radius
+
+    def overlap(self, pos : [float], radius : [float]):
+        return pdist([self.position, pos]) < self.radius + radius
+
+    def __str__(self):
+        p, v, a = "(", '(', '('
+        for d in range(self.dimensions):
+            p += str(self.position[d])
+            v += str(self.velocity[d])
+            a += str(self.acc[d])
+            if (d != self.dimensions - 1):
+                p += ","
+                v += ","
+                a += ','
+        p += ")"
+        v += ")"
+        a += ')'
+        return "position: " + p + " | velocity: " + v + " | acceleration: " + a
+
 
 class ParticleMap(SimData):
     def __init__(self, size : (float, float)):
@@ -50,15 +78,26 @@ class ParticleMap(SimData):
             if (position[p] < 0 or position[p] > self.size[p]):
                 return False
         return True
-    def add_particle(self, position : [float], velocity : [float], acc : (float, float)):
+    
+    def overlapping(self, radius : float, position : [float]):
+        for p in self.get_data():
+            if (p.overlap(position, radius)):
+                return True
+        return False
+
+    def add_particle(self, radius : float, position : [float], velocity : [float], acc : (float, float)):
+        # if (self.in_bounds(position) and not self.overlapping(radius, position)):
         if (self.in_bounds(position)):
-            self.data[self.id] = Particle(position, velocity, acc)
+            self.data[self.id] = Particle(radius, position, velocity, acc)
             self.id += 1
             return self.id - 1
         return False
 
-    def update_particle(self, id : int, dt : float):
-        self.data[id].step(dt)
+    def update_particle_pos(self, id : int, position : [float]):
+        self.data[id].position = position
+
+    def update_particle_velocity(self, id: int, velocity : [float]):
+        self.data[id].velocity = velocity
 
     def get_particle(self, id: int):
         if (id in self.data):
