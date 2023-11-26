@@ -245,7 +245,7 @@ class ParticleDynamics(Simulation):
         self.boundary_condition = boundary_condition
 
     def add_particle(self, radius : float, position : [float], velocity : [float]):
-        self.simdata.add_particle(radius, position, velocity, [0,0])
+        return self.simdata.add_particle(radius, position, velocity, [0,0])
 
     def get_data(self, filename : str, steps : int, dt : float):
         with open(filename, "w") as f:
@@ -285,24 +285,26 @@ class ParticleDynamics(Simulation):
                         new_velocities[id] = self.simdata.get_particle(id).velocity
                     for p in range(len(position)):
                         radius = self.simdata.get_particle(id).radius
-                        if (position[p] < radius):
-                            position[p] = (radius - position[p])
+                        if (position[p] <= radius):
+                            position[p] -= (position[p] - radius)
                             new_velocities[id][p] = -1 * new_velocities[id][p]
-                        elif(position[p] > self.size[p] - radius):
-                            position[p] = 2*self.size[p] - (position[p] + radius)
+                        elif(position[p] >= self.size[p] - radius):
+                            position[p] -= (position[p] + radius - self.size[p])
                             new_velocities[id][p] = -1 * new_velocities[id][p]
-                    new_velocities[id]
-                new_positions[id] = position
+        ##### particle-particle collisions O(nlogn) ##########
 
-        # particle-particle collisions O(nlogn)
         pos_to_id = {}
+        # for id in self.simdata.get_ids():
+        #     pos = self.simdata.get_particle(id).position
+        #     pos_to_id[tuple(pos)] = id
         for id in self.simdata.get_ids():
-            pos = self.simdata.get_particle(id).position
+            pos = new_positions[id]
             pos_to_id[tuple(pos)] = id
 
         # get all edges in the Delaunay graph
         points_to_check = set()
-        points = [i.position for i in self.simdata.get_data()]
+        # points = [i.position for i in self.simdata.get_data()]
+        points = [i for i in new_positions.values()]
         points = np.array(points)
         del_graph = Delaunay(points)
         for triangle in del_graph.simplices:
@@ -320,8 +322,11 @@ class ParticleDynamics(Simulation):
         epsilon = dt / 100
         collided = set()
         for id_pair in id_pairs:
-            a = self.simdata.get_particle(id_pair[0])
-            b = self.simdata.get_particle(id_pair[1])
+            a = self.simdata.get_particle(id_pair[0]).copy()
+            b = self.simdata.get_particle(id_pair[1]).copy()
+
+            a.position = new_positions[id_pair[0]]
+            b.position = new_positions[id_pair[1]]
 
             # the particles have collided resolve the collision
             if (pdist([a.position, b.position]) < a.radius + b.radius and (a.moving() or b.moving)):
@@ -360,8 +365,10 @@ class ParticleDynamics(Simulation):
                 # print("new_velocities:", new_velocities[id_pair[0]], new_velocities[id_pair[1]])
                 
                 # alter the positions 
-                new_positions[id_pair[0]] = a_prev + new_velocities[id_pair[0]] * (t_intercept + dt)
-                new_positions[id_pair[1]] = b_prev + new_velocities[id_pair[1]] * (t_intercept + dt)
+                # new_positions[id_pair[0]] = a_prev + new_velocities[id_pair[0]] * (t_intercept + dt)
+                # new_positions[id_pair[1]] = b_prev + new_velocities[id_pair[1]] * (t_intercept + dt)
+                new_positions[id_pair[0]] = a_prev + new_velocities[id_pair[0]] * (t_intercept)
+                new_positions[id_pair[1]] = b_prev + new_velocities[id_pair[1]] * (t_intercept)
 
         #update all positions and velocities O(n)
         for id in self.simdata.get_ids():
