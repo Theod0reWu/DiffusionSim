@@ -38,7 +38,7 @@ class Simulation(ABC):
         pass
     
     @abstractmethod
-    def get_data(self):
+    def get_data(self, filename : str, steps : int, dt : float):
         pass
 
 class CoarseDiffsion(Simulation):
@@ -194,10 +194,25 @@ class BrownianMotion(Simulation):
 
         anim = animation.FuncAnimation(fig, update, interval=2, frames=steps)
         anim.save("test.gif")
-        plt.show()
+        plt.show() 
 
-    def get_data(self):
-        pass
+    def get_data(self, filename : str, steps : int, dt : float):
+        with open(filename, "w") as f:
+            time_data = []
+            for i in range(steps):
+                time_data.append(self.simdata.copy())
+                self.step(dt)
+            time_data.append(self.simdata.copy())
+
+            f.write(str(self.size[0]) + "," + str(self.size[1]) + "\n")
+            f.write(str(steps) + "," + str(dt) + "\n")
+            f.write(str(len(self.simdata.get_ids())) + "\n")
+
+            for id in self.simdata.get_ids():
+                for t in time_data:
+                    pos = t.get_particle(id)
+                    f.write("(" + str(pos[0]) + "," + str(pos[1]) + ") ")
+                f.write("\n")
 
     def display(self):
         plt.clf()
@@ -232,8 +247,23 @@ class ParticleDynamics(Simulation):
     def add_particle(self, radius : float, position : [float], velocity : [float]):
         self.simdata.add_particle(radius, position, velocity, [0,0])
 
-    def get_data(self):
-        pass
+    def get_data(self, filename : str, steps : int, dt : float):
+        with open(filename, "w") as f:
+            time_data = []
+            for i in range(steps):
+                time_data.append(self.simdata.copy())
+                self.step(dt)
+            time_data.append(self.simdata.copy())
+
+            f.write(str(self.size[0]) + "," + str(self.size[1]) + "\n")
+            f.write(str(steps) + "," + str(dt) + "\n")
+            f.write(str(len(self.simdata.get_ids())) + "\n")
+
+            for id in self.simdata.get_ids():
+                for t in time_data:
+                    pos = t.get_particle(id).position
+                    f.write("(" + str(pos[0]) + "," + str(pos[1]) + ") ")
+                f.write("\n")
 
     def step(self, dt : float):
         # get projected positions O(n)
@@ -329,7 +359,7 @@ class ParticleDynamics(Simulation):
                 new_velocities[id_pair[1]] = vbt * tangent + van * unit_norm
                 # print("new_velocities:", new_velocities[id_pair[0]], new_velocities[id_pair[1]])
                 
-                # t_left = np.array(a.position)
+                # alter the positions 
                 new_positions[id_pair[0]] = a_prev + new_velocities[id_pair[0]] * (t_intercept + dt)
                 new_positions[id_pair[1]] = b_prev + new_velocities[id_pair[1]] * (t_intercept + dt)
 
@@ -371,7 +401,7 @@ class ParticleDynamics(Simulation):
                 ax.add_patch(c)
 
         anim = animation.FuncAnimation(fig, update, interval=2, frames=steps)
-        # anim.save("test.gif")
+        anim.save("test_particle.gif")
         plt.show()
 
     def display(self):
