@@ -94,8 +94,9 @@ class ParticleMap(SimData):
                 return True
         return False
 
-    def add_particle(self, radius : float, position : [float], velocity : [float], acc : (float, float)):
-        # if (self.in_bounds(position) and not self.overlapping(radius, position)):
+    def add_particle(self, radius : float, position : [float], velocity : [float], acc : (float, float), check_overlap = False):
+        if (check_overlap and self.overlapping(radius, position)):
+            return False
         if (self.in_bounds(position)):
             self.data[self.id] = Particle(radius, position, velocity, acc)
             self.id += 1
