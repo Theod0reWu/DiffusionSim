@@ -250,7 +250,7 @@ class ParticleDynamics(Simulation):
         if (self.boundary_condition == BoundaryCondition.REFLECTIVE):
             for id in self.simdata.get_ids():
                 position = new_positions[id]
-                if (not self.simdata.in_bounds(position)):
+                if (not self.simdata.in_bounds(position, self.simdata.get_particle(id).radius)):
                     if (not id in new_velocities):
                         new_velocities[id] = self.simdata.get_particle(id).velocity
                     for p in range(len(position)):

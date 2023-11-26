@@ -73,9 +73,9 @@ class ParticleMap(SimData):
         self.data = {}
         self.id = 1
 
-    def in_bounds(self, position: [float]):
+    def in_bounds(self, position: [float], radius = 0):
         for p in range(len(self.size)):
-            if (position[p] < 0 or position[p] > self.size[p]):
+            if (position[p] < radius or position[p] > self.size[p] - radius):
                 return False
         return True
     
