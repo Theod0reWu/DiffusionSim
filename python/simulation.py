@@ -204,8 +204,8 @@ class BrownianMotion(Simulation):
                 self.step(dt)
             time_data.append(self.simdata.copy())
 
-            f.write(str(self.size[0]) + "," + str(self.size[1]) + "\n")
-            f.write(str(steps) + "," + str(dt) + "\n")
+            f.write(str(self.size[0]) + " " + str(self.size[1]) + "\n")
+            f.write(str(steps) + " " + str(dt) + "\n")
             f.write(str(len(self.simdata.get_ids())) + "\n")
 
             for id in self.simdata.get_ids():

@@ -1,7 +1,7 @@
 This file describes the format of the data outputed from datagen.py:
 
-<width>, <height>
-<timesteps>, <dt> 
+<width> <height>
+<timesteps> <dt>
 <number of particles>
 
 The rest of the data is a sequence of points for each particle. There will be <timesteps> number of points.

@@ -13,12 +13,33 @@ The gif below show the simulation done for elastic particle collisions
 <br>
 # Data Generation
 Generate data using the datagen.py file: <br>
-$ python datagen.py <wierner/collision\> \<width\> \<height\> \<num particles\> \<timesteps\> \<dt\> \<output path\> <br>
+```
+python datagen.py <wierner/collision> <width> <height> <num particles> <timesteps> <dt> <output path>
+```
+<br>
 - weiner will use the wierner process to generate data (faster), collision will use elastic collusions (slower)
 - width and height are the dimensions of the simulation
 - num particles will place that many particles uniformly into the simulation space (for the collision simulation the velocity is chosen randomly from [0,1]).
 - timesteps is how many timesteps to simulate
 - dt is the amount of time that will elapse for each timestep
+
+# Simulation Results Query
+
+## Compilation
+
+This Project uses CGAL for computational geometry tasks.  System requirements include CMake, CGAL 5+, and Qt 5.
+
+```
+cmake -S cpp -B cpp/_build
+cmake --build cpp/_build
+```
+
+## Running the analysis tool
+
+```
+cpp/_build/point_locality
+```
+
 # Libraries 
 - numpy
 - scipy
