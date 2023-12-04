@@ -25,19 +25,13 @@ python datagen.py <wierner/collision> <width> <height> <num particles> <timestep
 
 # Simulation Results Query
 
-## Compilation
-
-This Project uses CGAL for computational geometry tasks.  System requirements include CMake, CGAL 5+, and Qt 5.
-
-```
-cmake -S cpp -B cpp/_build
-cmake --build cpp/_build
-```
-
 ## Running the analysis tool
 
+The analysis tool allows users to query the simulation data within a specified bounding box.  Users can specify timestep
+ranges of interest, including the interpolated position of particles within fractional timesteps.
+
 ```
-cpp/_build/point_locality
+python query_simulation.py python <input filename> <lower left corner> <upper right corner>
 ```
 
 # Libraries 

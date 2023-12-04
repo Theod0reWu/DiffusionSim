@@ -1,3 +1,4 @@
 *.gif
 .idea
+*.pyc
 cpp/cmake-build-debug
