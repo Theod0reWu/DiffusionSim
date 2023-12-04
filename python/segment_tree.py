@@ -44,7 +44,7 @@ class SegmentTree:
     """
     min_x and max_x params are for internal use only
     """
-    def __init__(self, segments: List[Segment], depth = 0):
+    def __init__(self, segments: List[Segment]):
         assert len(segments) > 0
         assert all([isinstance(x, Segment) for x in segments])
         x_endpoints = sorted([x.start.x for x in segments] + [x.end.x for x in segments])
@@ -52,7 +52,6 @@ class SegmentTree:
         self.min_x = min(segments, key=lambda s: s.min_x()).min_x()
         self.max_x = max(segments, key=lambda s: s.max_x()).max_x()
 
-        print(f'min: {self.min_x}, max: {self.max_x}, split: {self.split_point}')
         for segment in segments:
             print(segment)
 
@@ -67,14 +66,17 @@ class SegmentTree:
                     left.append(segment)
                 if segment.max_x() > self.split_point:
                     right.append(segment)
-        print(f'left: {len(left)}')
-        print(f'right: {len(right)}')
-        print(f'center: {len(self.center)}')
-        print(f'depth: {depth}')
-        if len(left) > 0:
-            self.left = SegmentTree(left, depth+1)
-        if len(right) > 0:
-            self.right = SegmentTree(right, depth+1)
+
+        # Handle edge cases where we cannot split two overlapping segments by simply processing
+        # them left-to-right.
+        if len(segments) >= 2 and (len(left) == 0 or len(right) == 0):
+            self.left = SegmentTree([min(segments, key=lambda s: s.min_x())])
+            self.right = SegmentTree([x for x in segments if x.min_x() > self.min_x])
+        else:
+            if len(left) > 0:
+                self.left = SegmentTree(left)
+            if len(right) > 0:
+                self.right = SegmentTree(right)
         self.center.sort(key=lambda s: segment.min_x())
 
 
