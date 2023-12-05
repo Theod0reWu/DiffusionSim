@@ -36,11 +36,20 @@ class Segment:
     def max_x(self):
         return max(self.start.x, self.end.x)
 
+    def min_y(self):
+        return min(self.start.y, self.end.y)
+
+    def max_y(self):
+        return max(self.start.y, self.end.y)
+
 
 """
 A segment tree
 """
 class SegmentTree:
+    left = None
+    right = None
+
     """
     min_x and max_x params are for internal use only
     """
@@ -51,9 +60,6 @@ class SegmentTree:
         self.split_point = x_endpoints[random.randint(0, len(x_endpoints)-1)]
         self.min_x = min(segments, key=lambda s: s.min_x()).min_x()
         self.max_x = max(segments, key=lambda s: s.max_x()).max_x()
-
-        for segment in segments:
-            print(segment)
 
         left = list()
         right = list()
@@ -77,11 +83,27 @@ class SegmentTree:
                 self.left = SegmentTree(left)
             if len(right) > 0:
                 self.right = SegmentTree(right)
-        self.center.sort(key=lambda s: segment.min_x())
+        self.center.sort(key=lambda s: segment.min_y())
 
+    """
+    Return the data associated with all particles in the specified bounding box.
+    The data associated with a particle is typically its ID/index.
+    """
+    def window_query(self, left: float, right: float, top: float, bottom: float):
+        retval = set()
 
-    # def window_query(self, lower_left, upper_right):
+        if left <= self.min_x and right >= self.max_x:
+            # TODO: do binary search instead of a linear scan.  In practice, this list is likely to be small, and
+            # there is probably a negligible performance benefit.
+            for segment in self.center:
+                if segment.min_y() > top:
+                    break
+                if segment.min_y() >= bottom:
+                    retval.add(segment)
 
+        if self.left is not None and left < self.split_point:
+            retval |= self.left.window_query(left, right, top, bottom)
+        if self.right is not None and right > self.split_point:
+            retval |= self.right.window_query(left, right, top, bottom)
 
-
-
+        return retval

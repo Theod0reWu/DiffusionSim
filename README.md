@@ -31,7 +31,7 @@ The analysis tool allows users to query the simulation data within a specified b
 ranges of interest, including the interpolated position of particles within fractional timesteps.
 
 ```
-python query_simulation.py python <input filename> <lower left corner> <upper right corner>
+python query_simulation.py python <input filename> <left> <right> <top> <bottom> <start time> <end time>
 ```
 
 # Libraries 
