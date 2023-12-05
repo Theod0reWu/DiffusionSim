@@ -18,9 +18,13 @@ python datagen.py <wierner/collision> <width> <height> <num particles> <timestep
 ```
 <br>
 - weiner will use the wierner process to generate data (faster), collision will use elastic collusions (slower)
+<br>
 - width and height are the dimensions of the simulation
+<br>
 - num particles will place that many particles uniformly into the simulation space (for the collision simulation the velocity is chosen randomly from [0,1]).
+<br>
 - timesteps is how many timesteps to simulate
+<br>
 - dt is the amount of time that will elapse for each timestep
 
 # Simulation Results Query
