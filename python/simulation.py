@@ -105,6 +105,24 @@ class CoarseDiffsion(Simulation):
 
         plt.axis('off')
         plt.show()
+
+    def animate(self, steps : int, dt : float):
+        fig = plt.figure()
+        color_map = 'hot'
+
+        plt.clf()
+        plt.axis("equal")
+        im = plt.imshow(self.data, cmap=color_map, vmin=0, vmax=self.total_concentration/(self.size[0] * self.size[1] / 2))
+
+        def update(i):
+            self.step(dt)
+            plt.clf()
+            plt.axis("equal")
+            im = plt.imshow(self.data, cmap=color_map, vmin=0, vmax=self.total_concentration/(self.size[0] * self.size[1] / 2))
+
+        anim = animation.FuncAnimation(fig, update, interval=2, frames=steps)
+        anim.save("coarse_test.gif")
+        plt.show() 
     
     def __str__(self):
         s = "size: " + str(self.size) + " | diffusion rate: " + str(self.diffusion_rate) + " | boundary: " + str(self.boundary_condition) +"\n"
@@ -255,8 +273,8 @@ class ParticleDynamics(Simulation):
                 self.step(dt)
             time_data.append(self.simdata.copy())
 
-            f.write(str(self.size[0]) + "," + str(self.size[1]) + "\n")
-            f.write(str(steps) + "," + str(dt) + "\n")
+            f.write(str(self.size[0]) + " " + str(self.size[1]) + "\n")
+            f.write(str(steps) + " " + str(dt) + "\n")
             f.write(str(len(self.simdata.get_ids())) + "\n")
 
             for id in self.simdata.get_ids():

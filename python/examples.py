@@ -39,6 +39,18 @@ def coarse_example_1D():
     plt.legend(loc="upper left")
     plt.show()
 
+def coarse_animate():
+    sim_size = (11,11)
+    diffusion_flux = ((.05, .2, .05),(.2, -1, .2),(.05, .2, .05))
+    diffusion_rate = .1
+    bc = BoundaryCondition.REFLECTIVE
+    
+    # create the simulation and show the start
+    sim =  CoarseDiffsion(sim_size, diffusion_flux, diffusion_rate, bc)
+    sim.set_concentration(5,5,1)
+
+    sim.animate(201, 1)
+
 def coarse_example_2D():
     #define sim parameters
     sim_size = (11,11)
@@ -81,19 +93,34 @@ def collisions_example():
     # sim.add_particle(.5, [7, 5], [-1, 0])
     # sim.add_particle(.5, [4.9, 5], [1, 0])
     # sim.add_particle(.5, [5.1, 5], [0, 1])
-    for i in range(100):
-        sim.add_particle(.1,[random.uniform(4,6), random.uniform(4,6)], [random.uniform(-1,1), random.uniform(-1,1)])
+    for i in range(500):
+        # added = sim.add_particle(.1,[random.uniform(4,6), random.uniform(4,6)], [random.uniform(-1,1), random.uniform(-1,1)])
+        # added = sim.add_particle(.1,[random.uniform(4,6), random.uniform(4,6)], [random.gauss(0,1) + .1, .1 + random.gauss(0,1)])
+        x = random.uniform(0,10)
+        y = random.uniform(0,10)
+        d = ((x - 5) ** 2 + (y - 5) ** 2) ** .5
+
+        while not (d <= 4):
+            x = random.uniform(0,10)
+            y = random.uniform(0,10)
+            d = ((x - 5) ** 2 + (y - 5) ** 2) ** .5
+        # print(d, x, y)
+        
+        added = sim.add_particle(.1,[x, y], [random.gauss(0,1) + .1, .1 + random.gauss(0,1)])
+
         # sim.add_particle(.1,[random.uniform(0,1), random.uniform(0,1)], [0,0])
     sim.display()
 
     # sim.simulate(12, 1)
     # sim.display()
 
-    sim.animate(20, .1)
+    sim.animate(100, .05)
 
 
 if __name__ == '__main__':
     # coarse_example_1D()
+
+    # coarse_animate()
 
     # coarse_example_2D()
 
